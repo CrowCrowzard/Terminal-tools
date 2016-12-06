@@ -272,3 +272,12 @@ export LESS_TERMCAP_so=$'\E[00;47;30m'   # Begins standout-mode.
 export LESS_TERMCAP_ue=$'\E[0m'          # Ends underline.
 export LESS_TERMCAP_us=$'\E[01;32m'      # Begins underline.
 
+# 辞書を引く(英和)
+function ejdict() {
+    grep "$1" /usr/share/dict/dict/gene-utf8.txt -E -A 1 -wi --color
+}
+# 辞書を引く(和英)
+function jedict() {
+    grep "$1" /usr/share/dict/dict/gene-utf8.txt -E -B 1 -wi --color
+}
+
