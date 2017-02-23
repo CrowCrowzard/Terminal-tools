@@ -226,7 +226,7 @@ export PATH=/usr/local/bin:$PATH
 
 # Virautlenv
 #export PATH=$PATH:/Users/hedgehog/workspace/Python/fsemi/bin
-export PATH=$PATH:/Users/hedgehog/workspace/Python/study/bin
+#export PATH=$PATH:/Users/hedgehog/workspace/Python/study/bin
 
 # prompt
 #autoload -U colors
@@ -281,3 +281,7 @@ function jedict() {
     grep "$1" /usr/share/dict/dict/gene-utf8.txt -E -B 1 -wi --color
 }
 
+# pyenv読み込み
+export PYENV_ROOT="/usr/local/var/pyenv"
+if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
+if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
