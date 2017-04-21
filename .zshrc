@@ -5,8 +5,7 @@
 ########################################
 # 環境変数
 export LANG=ja_JP.UTF-8
- 
- 
+  
 # 色を使用出来るようにする
 autoload -Uz colors
 colors
@@ -18,6 +17,9 @@ bindkey -e
 HISTFILE=~/.zsh_history
 HISTSIZE=1000000
 SAVEHIST=1000000
+
+# ヒストリの表示
+function history-all { history -E 1 }
  
 # プロンプト
 # 1行表示
@@ -171,6 +173,19 @@ alias -g G='| grep'
 # GHQ 関係
 alias g='cd $(ghq root)/$(ghq list | peco)'
 alias gh='hub browse $(ghq list | peco | cut -d "/" -f 2,3)'
+alias gg='ghq get'
+#ghq get git@github.com:CrowCrowzard/microposts_rails
+
+# Ruby
+## Gemfile生成
+alias Gemfile_create='gem install bundle && bundle init'
+
+# Docker
+alias dk='docker'
+alias dc='docker-compose'
+alias dm='docker-machine'
+alias dc_solo='docker-compose run web rspec -fd -c'
+alias dc_add='docker-compose run web rspec'
 
 # コマンド終了通知
 # {コマンド} && noti
@@ -248,6 +263,9 @@ export GOPATH=$HOME/workspace/go
 #export GOPATH=$HOME/vuls/go
 #export PATH=$PATH:$GOROOT:$GOPATH/bin
 #export PATH=$PATH:/usr/local/opt/go/libexec/bin
+
+# Node.js
+export PATH=/Users/hedgehog/.nodebrew/current/bin:$PATH
 
 # shell
 cd() {
