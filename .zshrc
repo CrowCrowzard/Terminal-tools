@@ -148,7 +148,8 @@ bindkey '^R' history-incremental-pattern-search-backward
 alias la='ls -a'
 alias ll='ls -l'
  
-alias rm='rm -i'
+alias rmrf='rm -rf'
+alias rm='rmtrash'
 alias cp='cp -i'
 alias mv='mv -i'
  
@@ -159,9 +160,6 @@ alias python='python -B'
 
 # g++11
 alias g++11='g++ -std=c++11'
-
-# eclipse
-alias eclipse='/Applications/eclipse/Eclipse.app/Contents/MacOS/eclipse -clean'
 
 # sudo の後のコマンドでエイリアスを有効にする
 alias sudo='sudo '
@@ -176,9 +174,8 @@ alias gh='hub browse $(ghq list | peco | cut -d "/" -f 2,3)'
 alias gg='ghq get'
 #ghq get git@github.com:CrowCrowzard/microposts_rails
 
-# Ruby
-## Gemfile生成
-alias Gemfile_create='gem install bundle && bundle init'
+# Git pull 現在のブランチ
+alias gp='git pull origin $(git rev-parse --abbrev-ref HEAD)'
 
 # Docker
 alias dk='docker'
@@ -186,6 +183,13 @@ alias dc='docker-compose'
 alias dm='docker-machine'
 alias dc_solo='docker-compose run web rspec -fd -c'
 alias dc_add='docker-compose run web rspec'
+
+# JMeter
+alias jmeter='java -jar /Applications/apache-jmeter-3.2/bin/ApacheJMeter.jar &'
+
+# MTR
+alias mtr='sudo /usr/local/sbin/mtr'
+#alias mtr='sudo /usr/local/Cellar/mtr/0.92/sbin/mtr'
 
 # コマンド終了通知
 # {コマンド} && noti
@@ -226,22 +230,22 @@ esac
 #追加した設定
 #########################################
 
-#antの設定
-ANT_HOME=/usr/bin/apache-ant-1.9.2                                                                                                                    
-PATH=$ANT_HOME/bin:$PATH
 
 # ls
 export LSCOLORS=gxfxcxdxbxegedabagacag
 export LS_COLORS='di=36;40:ln=35;40:so=32;40:pi=33;40:ex=31;40:bd=34;46:cd=34;43:su=30;41:sg=30;46:tw=30;42:ow=30;46'
 
 # Python startupの追加
-export PYTHONSTARTUP=~/.pythonrc.py
+#export PYTHONSTARTUP=~/.pythonrc.py
 
 export PATH=/usr/local/bin:$PATH
 
 # Virautlenv
 #export PATH=$PATH:/Users/hedgehog/workspace/Python/fsemi/bin
 #export PATH=$PATH:/Users/hedgehog/workspace/Python/study/bin
+
+# IPv6 パブリックDNS
+export V6='2001:4860:4860::8888'
 
 # prompt
 #autoload -U colors
@@ -256,7 +260,7 @@ PROMPT="$p_cdir$p_mark"
 eval "$(rbenv init -)"
 
 # go
-export GOPATH=$HOME/workspace/go
+#export GOPATH=$HOME/workspace/go
 
 # golang
 #export GOROOT=/usr/local/Cellar/go/1.6.2/libexec
@@ -265,7 +269,10 @@ export GOPATH=$HOME/workspace/go
 #export PATH=$PATH:/usr/local/opt/go/libexec/bin
 
 # Node.js
-export PATH=/Users/hedgehog/.nodebrew/current/bin:$PATH
+export PATH=/Users/hedgehocrow/.nodebrew/current/bin:$PATH
+
+# Java
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_131.jdk/Contents/Home
 
 # shell
 cd() {
@@ -291,13 +298,13 @@ export LESS_TERMCAP_ue=$'\E[0m'          # Ends underline.
 export LESS_TERMCAP_us=$'\E[01;32m'      # Begins underline.
 
 # 辞書を引く(英和)
-function ejdict() {
-    grep "$1" /usr/share/dict/dict/gene-utf8.txt -E -A 1 -wi --color
-}
-# 辞書を引く(和英)
-function jedict() {
-    grep "$1" /usr/share/dict/dict/gene-utf8.txt -E -B 1 -wi --color
-}
+#function ejdict() {
+#    grep "$1" /usr/share/dict/dict/gene-utf8.txt -E -A 1 -wi --color
+#}
+## 辞書を引く(和英)
+#function jedict() {
+#    grep "$1" /usr/share/dict/dict/gene-utf8.txt -E -B 1 -wi --color
+#}
 
 # pyenv読み込み
 export PYENV_ROOT="/usr/local/var/pyenv"
