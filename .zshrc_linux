@@ -135,6 +135,22 @@ alias sudo='sudo '
 alias -g L='| less'
 alias -g G='| grep'
 
+# Git
+alias ga='git add'
+alias gb='git blame'
+alias gc='git checkout'
+alias gl='git log'
+alias gr='git reset'
+alias gs='git status'
+alias gpush='git push origin $(git rev-parse --abbrev-ref HEAD)'
+alias gcom='git commit'
+alias gcm='git commit -m'
+alias gd='git diff'
+alias gdc='git diff --cached'
+alias gp='git pull origin $(git rev-parse --abbrev-ref HEAD)'
+alias resetconf='git reset --hard ORIG_HEAD'
+alias prune='git remote prune origin'
+
 # C で標準出力をクリップボードにコピーする
 # mollifier delta blog : http://mollifier.hatenablog.com/entry/20100317/p1
 if which pbcopy >/dev/null 2>&1 ; then

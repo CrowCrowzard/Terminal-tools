@@ -148,13 +148,14 @@ bindkey '^R' history-incremental-pattern-search-backward
 alias la='ls -a'
 alias ll='ls -l'
  
-alias rmrf='rm -rf'
-alias rm='rmtrash'
+#alias rmrf='rm -rf'
+#alias rm='rmtrash'
 alias cp='cp -i'
 alias mv='mv -i'
  
 alias mkdir='mkdir -p'
 
+alias show='history 100'
 # python
 alias python='python -B'
 
@@ -168,21 +169,38 @@ alias sudo='sudo '
 alias -g L='| less'
 alias -g G='| grep'
 
+# Ruby
+alias be='bundle exec'
+
 # GHQ 関係
 alias g='cd $(ghq root)/$(ghq list | peco)'
 alias gh='hub browse $(ghq list | peco | cut -d "/" -f 2,3)'
 alias gg='ghq get'
 #ghq get git@github.com:CrowCrowzard/microposts_rails
 
-# Git pull 現在のブランチ
+# Git
+alias ga='git add'
+alias gb='git blame'
+alias gc='git checkout'
+alias gl='git log'
+alias gr='git reset'
+alias gs='git status'
+alias gpush='git push origin $(git rev-parse --abbrev-ref HEAD)'
+alias gcom='git commit'
+alias gcm='git commit -m'
+alias gd='git diff'
+alias gdc='git diff --cached'
 alias gp='git pull origin $(git rev-parse --abbrev-ref HEAD)'
+alias resetconf='git reset --hard ORIG_HEAD'
+alias prune='git remote prune origin'
 
 # Docker
 alias dk='docker'
+alias dps='docker ps'
 alias dc='docker-compose'
 alias dm='docker-machine'
-alias dc_solo='docker-compose run web rspec -fd -c'
-alias dc_add='docker-compose run web rspec'
+alias d_reset='docker volume ls -f "dangling=true" -q | xargs docker volume rm:'
+alias guard='docker-compose run --rm web guard'
 
 # JMeter
 alias jmeter='java -jar /Applications/apache-jmeter-3.2/bin/ApacheJMeter.jar &'
@@ -260,13 +278,8 @@ PROMPT="$p_cdir$p_mark"
 eval "$(rbenv init -)"
 
 # go
-#export GOPATH=$HOME/workspace/go
-
-# golang
-#export GOROOT=/usr/local/Cellar/go/1.6.2/libexec
-#export GOPATH=$HOME/vuls/go
-#export PATH=$PATH:$GOROOT:$GOPATH/bin
-#export PATH=$PATH:/usr/local/opt/go/libexec/bin
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
 
 # Node.js
 export PATH=/Users/hedgehocrow/.nodebrew/current/bin:$PATH
@@ -310,3 +323,7 @@ export LESS_TERMCAP_us=$'\E[01;32m'      # Begins underline.
 export PYENV_ROOT="/usr/local/var/pyenv"
 if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
 if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
+
+# goenv読み込み
+export PATH="$HOME/.goenv/bin:$PATH"
+eval "$(goenv init -)"
