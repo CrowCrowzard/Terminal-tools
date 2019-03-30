@@ -1,5 +1,5 @@
-autocmd BufNewFile *.cpp 0r /Users/hedgehog/RiPPro/Template/contest.cpp
-autocmd BufNewFile *.sh 0r /Users/hedgehog/workspace/template/temp.sh
+"autocmd BufNewFile *.cpp 0r /Users/hedgehog/RiPPro/Template/contest.cpp
+"autocmd BufNewFile *.sh 0r /Users/hedgehog/workspace/template/temp.sh
 "autocmd BufNewFile *.cpp 0r /Users/hedgehog/RiPPro/Template/temp.cpp
 "autocmd BufNewFile *.rb 0r /Users/hedgehog/workspace/template/temp.rb
 "autocmd BufNewFile *.py 0r /Users/hedgehog/workspace/template/temp.py
@@ -87,3 +87,6 @@ set fileencoding=utf-8
 " *.rbの時のタブ幅を変更する
 autocmd BufRead,BufNewfile *.rb setlocal tabstop=2 softtabstop=2 shiftwidth=2
 
+" カラースキーマ変更
+colorscheme apprentice
+set t_Co=256
