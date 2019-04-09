@@ -185,6 +185,8 @@ alias gc='git checkout'
 alias gl='git log'
 alias gr='git reset'
 alias gs='git status'
+alias grm='git rm'
+alias gmv='git mv'
 alias gpush='git push origin $(git rev-parse --abbrev-ref HEAD)'
 alias gcom='git commit'
 alias gcm='git commit -m'
@@ -196,6 +198,7 @@ alias prune='git remote prune origin'
 
 # Docker
 alias dk='docker'
+alias dkr='docker run'
 alias dps='docker ps'
 alias dc='docker-compose'
 alias dm='docker-machine'
@@ -327,3 +330,11 @@ if which pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -
 # goenv読み込み
 export PATH="$HOME/.goenv/bin:$PATH"
 eval "$(goenv init -)"
+
+# jenv読み込み
+# jEnv
+#export JENV_ROOT="$HOME/.jenv"
+#if [ -d "${JENV_ROOT}" ]; then
+#  export PATH="$JENV_ROOT/bin:$PATH"
+#  eval "$(jenv init -)"
+#fi
