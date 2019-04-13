@@ -199,6 +199,7 @@ alias prune='git remote prune origin'
 # Docker
 alias dk='docker'
 alias dkr='docker run'
+alias dkb='docker build'
 alias dps='docker ps'
 alias dc='docker-compose'
 alias dm='docker-machine'
@@ -333,8 +334,12 @@ eval "$(goenv init -)"
 
 # jenv読み込み
 # jEnv
-#export JENV_ROOT="$HOME/.jenv"
-#if [ -d "${JENV_ROOT}" ]; then
-#  export PATH="$JENV_ROOT/bin:$PATH"
-#  eval "$(jenv init -)"
-#fi
+export JENV_ROOT="$HOME/.jenv"
+if [ -d "${JENV_ROOT}" ]; then
+  export PATH="$JENV_ROOT/bin:$PATH"
+  eval "$(jenv init -)"
+fi
+
+# nodenv読み込み
+export PATH="$HOME/.nodenv/bin:$PATH"
+eval "$(nodenv init -)"
