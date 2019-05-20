@@ -206,6 +206,9 @@ alias dm='docker-machine'
 alias d_reset='docker volume ls -f "dangling=true" -q | xargs docker volume rm:'
 alias guard='docker-compose run --rm web guard'
 
+# Kubernetes
+alias k="kubectl"
+
 # JMeter
 alias jmeter='java -jar /Applications/apache-jmeter-3.2/bin/ApacheJMeter.jar &'
 
@@ -343,3 +346,7 @@ fi
 # nodenv読み込み
 export PATH="$HOME/.nodenv/bin:$PATH"
 eval "$(nodenv init -)"
+
+# Kubernetesの補完
+source <(kubectl completion zsh)
+complete -o default -F __start_kubectl k
