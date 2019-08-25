@@ -183,6 +183,7 @@ alias ga='git add'
 alias gb='git blame'
 alias gc='git checkout'
 alias gl='git log'
+alias glg='git log --oneline --decorate=full --graph'
 alias gr='git reset'
 alias gs='git status'
 alias grm='git rm'
@@ -208,6 +209,10 @@ alias guard='docker-compose run --rm web guard'
 
 # Kubernetes
 alias k="kubectl"
+
+# CircleCI
+alias cc="circleci"
+alias cle="circleci local execute"
 
 # JMeter
 alias jmeter='java -jar /Applications/apache-jmeter-3.2/bin/ApacheJMeter.jar &'
@@ -287,6 +292,7 @@ eval "$(rbenv init -)"
 # go
 export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
+export GO111MODULE=on
 
 # Node.js
 export PATH=/Users/hedgehocrow/.nodebrew/current/bin:$PATH
