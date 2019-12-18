@@ -182,7 +182,9 @@ alias gg='ghq get'
 alias ga='git add'
 alias gb='git blame'
 alias gc='git checkout'
+alias gcb='git checkout -b'
 alias gl='git log'
+alias gf='git fetch'
 alias glg='git log --oneline --decorate=full --graph'
 alias gr='git reset'
 alias gs='git status'
@@ -195,7 +197,7 @@ alias gd='git diff'
 alias gdc='git diff --cached'
 alias gp='git pull origin $(git rev-parse --abbrev-ref HEAD)'
 alias resetconf='git reset --hard ORIG_HEAD'
-alias prune='git remote prune origin'
+alias prune='git remote prune origin && git branch --merged | egrep -v "\*|develop|master" | xargs git branch -d'
 
 # Docker
 alias dk='docker'
@@ -213,6 +215,9 @@ alias k="kubectl"
 # CircleCI
 alias cc="circleci"
 alias cle="circleci local execute"
+
+# VS Code
+alias c="code"
 
 # JMeter
 alias jmeter='java -jar /Applications/apache-jmeter-3.2/bin/ApacheJMeter.jar &'
@@ -331,6 +336,429 @@ export LESS_TERMCAP_us=$'\E[01;32m'      # Begins underline.
 #function jedict() {
 #    grep "$1" /usr/share/dict/dict/gene-utf8.txt -E -B 1 -wi --color
 #}
+
+#########################################
+# TMUX関連
+# ----------------------------
+# TMUX起動にzshプラグインは不要
+#if [[ -z "$TMUX" ]]
+#then
+#      tmux new-session;
+#        exit;
+#fi
+
+# 画面を分割しながら複数ホストにssh
+# usage: mssh -n 4 test{1..3}.example.jp
+# -n: 1つのwindowに表示するpaneの最大数
+function mssh() {
+    max_pane_num=30
+    while getopts n: option
+    do
+      case $option in
+        n) max_pane_num=$OPTARG ;;
+        \?) echo "Invalid option."
+              exit 1;;
+      esac
+    done
+    shift $((OPTIND - 1))
+    i=1
+    cnt=0
+    host_num=$#
+    for host in $@
+    do
+        cnt=$((cnt+1))
+        ### 各ホストにsshログイン
+        if [ $i -eq 1 ]; then
+            # 各Windowの最初の1台はsshするだけ
+            tmux send-keys "ssh $host" C-m
+        else
+            tmux split-window
+            tmux select-layout tiled
+            tmux send-keys "ssh $host" C-m
+        fi
+        rest=$((i%max_pane_num))
+        i=$((i+1))
+
+        ### 2つのWindowにmax_pane_numサーバずつ表示
+        if [ $rest -eq 0 ] && [ $cnt -ne $host_num ]; then
+            tmux set-window-option synchronize-panes on
+            tmux new-window -n "mssh"
+            i=1
+        fi
+    done
+    # pane間を同期
+    tmux setw synchronize-panes
+}
+
+# main-horizontal
+function hssh() {
+    max_pane_num=30
+    while getopts n: option
+    do
+      case $option in
+        n) max_pane_num=$OPTARG ;;
+        \?) echo "Invalid option."
+              exit 1;;
+      esac
+    done
+    shift $((OPTIND - 1))
+    i=1
+    cnt=0
+    host_num=$#
+    for host in $@
+    do
+        cnt=$((cnt+1))
+        ### 各ホストにsshログイン
+        if [ $i -eq 1 ]; then
+            # 各Windowの最初の1台はsshするだけ
+            tmux send-keys "ssh $host" C-m
+        else
+            tmux split-window
+            tmux select-layout main-horizontal
+            tmux send-keys "ssh $host" C-m
+        fi
+        rest=$((i%max_pane_num))
+        i=$((i+1))
+
+        ### 2つのWindowにmax_pane_numサーバずつ表示
+        if [ $rest -eq 0 ] && [ $cnt -ne $host_num ]; then
+            tmux set-window-option synchronize-panes on
+            tmux new-window -n "mssh"
+            i=1
+        fi
+    done
+    # pane間を同期
+    tmux setw synchronize-panes
+}
+
+# even-vertical
+function vssh() {
+    max_pane_num=30
+    while getopts n: option
+    do
+      case $option in
+        n) max_pane_num=$OPTARG ;;
+        \?) echo "Invalid option."
+              exit 1;;
+      esac
+    done
+    shift $((OPTIND - 1))
+    i=1
+    cnt=0
+    host_num=$#
+    for host in $@
+    do
+        cnt=$((cnt+1))
+        ### 各ホストにsshログイン
+        if [ $i -eq 1 ]; then
+            # 各Windowの最初の1台はsshするだけ
+            tmux send-keys "ssh $host" C-m
+        else
+            tmux split-window
+            tmux select-layout even-vertical
+            tmux send-keys "ssh $host" C-m
+        fi
+        rest=$((i%max_pane_num))
+        i=$((i+1))
+
+        ### 2つのWindowにmax_pane_numサーバずつ表示
+        if [ $rest -eq 0 ] && [ $cnt -ne $host_num ]; then
+            tmux set-window-option synchronize-panes on
+            tmux new-window -n "mssh"
+            i=1
+        fi
+    done
+    # pane間を同期
+    tmux setw synchronize-panes
+}
+
+# remoteのtmux attachでagent転送が切れないようにする
+agent="$HOME/.ssh/agent"
+if [ -S "$SSH_AUTH_SOCK" ]; then
+    case $SSH_AUTH_SOCK in
+        /tmp/*/agent.[0-9]*)
+            ln -snf "$SSH_AUTH_SOCK" $agent && export SSH_AUTH_SOCK=$agent
+    esac
+elif [ -S $agent ]; then
+    export SSH_AUTH_SOCK=$agent
+else
+    echo "no ssh-agent"
+fi
+
+#function is_exists() { type "$1" >/dev/null 2>&1; return $?; }
+#function is_osx() { [[ $OSTYPE == darwin* ]]; }
+#function is_screen_running() { [ ! -z "$STY" ]; }
+#function is_tmux_runnning() { [ ! -z "$TMUX" ]; }
+#function is_screen_or_tmux_running() { is_screen_running || is_tmux_runnning; }
+#function shell_has_started_interactively() { [ ! -z "$PS1" ]; }
+#function is_ssh_running() { [ ! -z "$SSH_CONECTION" ]; }
+#
+#function tmux_automatically_attach_session()
+#{
+#    if is_screen_or_tmux_running; then
+#        ! is_exists 'tmux' && return 1
+#
+#        if is_tmux_runnning; then
+#            echo "${fg_bold[blue]} _____ __  __ _   ___  __ ${reset_color}"
+#            echo "${fg_bold[blue]}|_   _|  \/  | | | \ \/ / ${reset_color}"
+#            echo "${fg_bold[blue]}  | | | |\/| | | | |\  /  ${reset_color}"
+#            echo "${fg_bold[blue]}  | | | |  | | |_| |/  \  ${reset_color}"
+#            echo "${fg_bold[blue]}  |_| |_|  |_|\___//_/\_\ ${reset_color}"
+#        elif is_screen_running; then
+#            echo "This is on screen."
+#        fi
+#    else
+#        if shell_has_started_interactively && ! is_ssh_running; then
+#            if ! is_exists 'tmux'; then
+#                echo 'Error: tmux command not found' 2>&1
+#                return 1
+#            fi
+#
+#            if tmux has-session >/dev/null 2>&1 && tmux list-sessions | grep -qE '.*]$'; then
+#                # detached session exists
+#                tmux list-sessions
+#                echo -n "Tmux: attach? (y/N/num) "
+#                read
+#                if [[ "$REPLY" =~ ^[Yy]$ ]] || [[ "$REPLY" == '' ]]; then
+#                    tmux attach-session
+#                    if [ $? -eq 0 ]; then
+#                        echo "$(tmux -V) attached session"
+#                        return 0
+#                    fi
+#                elif [[ "$REPLY" =~ ^[0-9]+$ ]]; then
+#                    tmux attach -t "$REPLY"
+#                    if [ $? -eq 0 ]; then
+#                        echo "$(tmux -V) attached session"
+#                        return 0
+#                    fi
+#                fi
+#            fi
+#
+#            if is_osx && is_exists 'reattach-to-user-namespace'; then
+#                # on OS X force tmux's default command
+#                # to spawn a shell in the user's namespace
+#                tmux_config=$(cat $HOME/.tmux.conf <(echo 'set-option -g default-command "reattach-to-user-namespace -l $SHELL"'))
+#                tmux -f <(echo "$tmux_config") new-session && echo "$(tmux -V) created new session supported OS X"
+#            else
+#                tmux new-session && echo "tmux created new session"
+#            fi
+#        fi
+#    fi
+#}
+#tmux_automatically_attach_session
+
+# cdrの設定
+#------------------
+# cdrを有効にする
+if [[ -n $(echo ${^fpath}/chpwd_recent_dirs(N)) && -n $(echo ${^fpath}/cdr(N)) ]]; then
+    autoload -Uz chpwd_recent_dirs cdr add-zsh-hook
+    add-zsh-hook chpwd chpwd_recent_dirs
+    zstyle ':completion:*' recent-dirs-insert both
+    zstyle ':chpwd:*' recent-dirs-default true
+    zstyle ':chpwd:*' recent-dirs-max 1000
+    zstyle ':chpwd:*' recent-dirs-file "$HOME/.cache/chpwd-recent-dirs"
+fi
+
+# peco関連
+#------------------
+# tac commandがないときはtail -rで代用する
+if which tac > /dev/null 2>&1; then
+else
+    alias tac='tail -r'
+fi
+
+# コマンド履歴検索
+function peco-history-selection() {
+    BUFFER=`history -n 1 | tac | awk '!a[$0]++' | peco`
+    CURSOR=$#BUFFER
+    zle reset-prompt
+}
+
+
+function _get_hosts() {
+    # historyを番号なし、逆順、ssh*にマッチするものを1番目から表示
+    # 最後の項をhost名と仮定してhost部分を取り出す
+    local hosts
+    ssh_hist="$(history -nrm 'ssh*' 1 | \grep 'ssh ')"
+    # hostnameよりも前にあるオプション user@ を削除
+    # know_hostsからもホスト名を取り出す
+    # portを指定したり、ip指定でsshしていると [hoge.com]:2222,[\d{3}.\d{3].\d{3}.\d{3}]:2222 といったものもあるのでそれにも対応している
+    hosts="$(echo $ssh_hist | perl -pe 's/ssh(\s+-([1246AaCfGgKkMNnqsTtVvXxYy]|[^1246AaCfGgKkMNnqsTtVvXxYy]\s+\S+))*\s+(\S+@)?//' | cut -d' ' -f1)"
+    hosts="$hosts\n$(cut -d' ' -f1  ~/.ssh/known_hosts | tr -d '[]' | tr ',' '\n' | cut -d: -f1)"
+    hosts=$(echo $hosts | awk '!a[$0]++')
+    echo $hosts
+}
+
+# 過去に行ったことのあるHostとknown_hostsに記載されているHostへのSSH
+function peco-ssh() {
+    hosts=`_get_hosts`
+    local selected_host=$(echo $hosts | peco --prompt="ssh >" --query "$LBUFFER")
+    if [ -n "$selected_host" ]; then
+        BUFFER="ssh ${selected_host}"
+        zle accept-line
+    fi
+}
+
+# 過去に行ったことのあるディレクトリを検索して移動（上記のcdrの設定が必要）
+function peco-cdr () {
+    local selected_dir="$(cdr -l | sed 's/^[0-9]\+ \+//' | peco --prompt="cdr >" --query "$LBUFFER")"
+    if [ -n "$selected_dir" ]; then
+        BUFFER="cd ${selected_dir}"
+        zle accept-line
+    fi
+}
+
+# カレントディレクトリ以下のファイル検索（dotファイルを除く）
+function peco-find() {
+    local l=$(\find . -maxdepth 8 -a \! -regex '.*/\..*' | peco --prompt="find >" --query "$LBUFFER")
+    BUFFER="${LBUFFER}${l}"
+    CURSOR=$#BUFFER
+    zle clear-screen
+}
+
+# カレントディレクトリ以下のファイル検索（dotファイルを含む）
+function peco-find-all() {
+    local l=$(\find . -maxdepth 8 | peco --prompt="find-all >" --query "$LBUFFER")
+    BUFFER="${LBUFFER}${l}"
+    CURSOR=$#BUFFER
+    zle clear-screen
+}
+
+# プロセスを検索してpidを取得（主にkill用。危険なのでkiilは自分でうつ）
+function peco-kill(){
+    FILTERD=$(ps aux | peco --prompt="ps >" --query "$LBUFFER" | awk '{print $2}')
+    BUFFER=${BUFFER}${FILTERD}
+    CURSOR=$#BUFFER
+#   --- Too dangerous!! ---
+#    proc=`ps aux | peco`
+#    pid=`echo "$proc" | awk '{print $2}'`
+#    echo "kill pid:$pid. [$proc]"
+#    kill $pid
+}
+
+# gitのコミットログを選択してhash値を取得
+function git-hash(){
+    FILTERD=$(git log --oneline --branches | peco | awk '{print $1}')
+    BUFFER=${BUFFER}${FILTERD}
+    CURSOR=$#BUFFER
+}
+
+# gitのコミットログを選択してcherry-pick
+function git-cherry-pick(){
+    FILTERD=$(git log --oneline --branches | peco | awk '{print $1}')
+    BUFFER=${BUFFER}"git cherry-pick "${FILTERD}
+    CURSOR=$#BUFFER
+    zle accept-line
+    zle clear-screen
+}
+
+# git変更があったファイル名を取得
+function git-changed-files(){
+    FILTERD=$(git status --short | peco | awk '{print $2}')
+    BUFFER=${BUFFER}${FILTERD}
+    CURSOR=$#BUFFER
+}
+
+# remoteブランチ一覧からlocalブランチを作成してcheckout
+function git-checkout-branch(){
+    FILTERD=$(git branch -r --sort=-committerdate | tr -d ' ' | peco)
+    BUFFER=${BUFFER}"git checkout "${FILTERD#*/}
+    CURSOR=$#BUFFER
+    zle accept-line
+    zle clear-screen
+}
+
+# tmuxのsessionを選択してattach
+function tmux-session-attach(){
+    local session=$(tmux ls < /dev/null | peco | awk '{print $1}' | tr -d :)
+    BUFFER="tmux a -t ${session}"
+    zle accept-line
+    zle clear-screen
+}
+
+# docker psをpecoで選択してCONTAINER IDを取得
+function docker-ps(){
+    FILTERD=$(docker ps -a | peco | awk '{print $1}')
+    BUFFER=${BUFFER}${FILTERD}
+    CURSOR=$#BUFFER
+}
+
+# docker psでCONTAINER IDを取得してそのコンテナに入る
+function docker-exec(){
+    local container_id=$(docker ps -a | peco | awk '{print $1}')
+    BUFFER="docker exec -it $container_id bash"
+    zle accept-line
+    zle clear-screen
+}
+
+# docker imagesでIMAGE IDを取得してrm -fを入力
+function docker-rmi(){
+    FILTERD=$(docker images | peco | awk '{print $3}')
+    BUFFER="docker rmi -f "${FILTERD}
+    CURSOR=$#BUFFER
+}
+
+# kubectl get podでpod nameを取得してそのpodに入る
+function kube-exec(){
+    local pod_name=$(kubectl get pod -o wide | peco | awk '{print $1}')
+    BUFFER="kubectl exec -it $pod_name bash"
+    zle accept-line
+    zle clear-screen
+}
+
+# kubectl get deployでdeployを取得してdeleteを入力
+function kube-rm-deploy(){
+    FILTERD=$(kubectl get deploy -o wide | peco | awk '{print $1}')
+    BUFFER="kubectl delete deploy "${FILTERD}
+    CURSOR=$#BUFFER
+}
+
+# kubectl get svcでserviceを取得してdeleteを入力
+function kube-rm-service(){
+    FILTERD=$(kubectl get svc -o wide | peco | awk '{print $1}')
+    BUFFER="kubectl delete svc "${FILTERD}
+    CURSOR=$#BUFFER
+}
+
+# peco関連のキーバインド
+if [ -e /usr/local/bin/peco ]; then
+    zle -N peco-history-selection
+    bindkey '^r' peco-history-selection
+    zle -N peco-cdr
+    bindkey '^u^r' peco-cdr
+    zle -N peco-find
+    bindkey '^u^f' peco-find
+    zle -N peco-find-all
+    bindkey '^u^a' peco-find-all
+    zle -N peco-kill
+    bindkey '^u^k' peco-kill
+    zle -N git-hash
+    bindkey '^g^h' git-hash
+    zle -N git-cherry-pick
+    bindkey '^g^p' git-cherry-pick
+    zle -N git-changed-files
+    bindkey '^g^f' git-changed-files
+    zle -N git-checkout-branch
+    bindkey '^g^r' git-checkout-branch
+    zle -N tmux-session-attach
+    bindkey '^u^i' tmux-session-attach
+    zle -N git-commit
+    bindkey '^g^o' git-commit
+    zle -N docker-ps
+    bindkey '^o^p' docker-ps
+    zle -N docker-exec
+    bindkey '^o^e' docker-exec
+    zle -N docker-rm
+    bindkey '^o^k' docker-rm
+    zle -N docker-rmi
+    bindkey '^o^i' docker-rmi
+    zle -N kube-exec
+    bindkey '^@^e' kube-exec
+    zle -N kube-rm-deploy
+    bindkey '^@^k' kube-rm-deploy
+    zle -N kube-rm-service
+    bindkey '^@^i' kube-rm-service
+fi
 
 # pyenv読み込み
 export PYENV_ROOT="/usr/local/var/pyenv"
