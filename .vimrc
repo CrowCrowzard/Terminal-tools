@@ -82,11 +82,13 @@ set noswapfile
 
 " エンコーディングUTF-8に変更
 set fileencoding=utf-8
+set encoding=utf-8
 
 " http://qiita.com/mitsuru793/items/2d464f30bd091f5d0fef
 " *.rbの時のタブ幅を変更する
 autocmd BufRead,BufNewfile *.rb setlocal tabstop=2 softtabstop=2 shiftwidth=2
 autocmd BufRead,BufNewfile *.yml setlocal tabstop=2 softtabstop=2 shiftwidth=2
+autocmd BufRead,BufNewfile *.go setlocal tabstop=4 softtabstop=4 shiftwidth=4
 
 " カラースキーマ変更
 colorscheme apprentice
