@@ -147,7 +147,15 @@ bindkey '^R' history-incremental-pattern-search-backward
  
 alias la='ls -a'
 alias ll='ls -l'
- 
+alias lla='ls -la'
+
+alias e='exa'
+alias el='e -l'
+alias ea='e -a'
+alias ela='e -la'
+
+alias b='bat'
+
 #alias rmrf='rm -rf'
 #alias rm='rmtrash'
 alias cp='cp -i'
@@ -228,7 +236,7 @@ alias mtr='sudo /usr/local/sbin/mtr'
 
 # コマンド終了通知
 # {コマンド} && noti
-#alias noti='terminal-notifier -message "コマンド完了"'
+alias noti='terminal-notifier -message "コマンド完了" -sound default'
 
 # C で標準出力をクリップボードにコピーする
 # mollifier delta blog : http://mollifier.hatenablog.com/entry/20100317/p1
@@ -341,11 +349,11 @@ export LESS_TERMCAP_us=$'\E[01;32m'      # Begins underline.
 # TMUX関連
 # ----------------------------
 # TMUX起動にzshプラグインは不要
-#if [[ -z "$TMUX" ]]
-#then
-#      tmux new-session;
-#        exit;
-#fi
+if [[ -z "$TMUX" ]]
+then
+      tmux new-session;
+        exit;
+fi
 
 # 画面を分割しながら複数ホストにssh
 # usage: mssh -n 4 test{1..3}.example.jp
@@ -574,7 +582,6 @@ function peco-history-selection() {
     zle reset-prompt
 }
 
-
 function _get_hosts() {
     # historyを番号なし、逆順、ssh*にマッチするものを1番目から表示
     # 最後の項をhost名と仮定してhost部分を取り出す
@@ -641,6 +648,16 @@ function git-hash(){
     FILTERD=$(git log --oneline --branches | peco | awk '{print $1}')
     BUFFER=${BUFFER}${FILTERD}
     CURSOR=$#BUFFER
+}
+
+# Pull Request ブランチへのチェックアウト
+function peco-checkout-pull-request () {
+    local selected_pr_id=$(gh pr list | peco | awk '{ print $1 }')
+    if [ -n "$selected_pr_id" ]; then
+        BUFFER="gh pr checkout ${selected_pr_id}"
+        zle accept-line
+    fi
+    zle clear-screen
 }
 
 # gitのコミットログを選択してcherry-pick
@@ -735,7 +752,9 @@ if [ -e /usr/local/bin/peco ]; then
     zle -N git-hash
     bindkey '^g^h' git-hash
     zle -N git-cherry-pick
-    bindkey '^g^p' git-cherry-pick
+    bindkey '^g^c' git-cherry-pick
+    zle -N peco-checkout-pull-request
+    bindkey "^g^p" peco-checkout-pull-request
     zle -N git-changed-files
     bindkey '^g^f' git-changed-files
     zle -N git-checkout-branch
@@ -784,3 +803,6 @@ eval "$(nodenv init -)"
 # Kubernetesの補完
 source <(kubectl completion zsh)
 complete -o default -F __start_kubectl k
+
+# yarn
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
