@@ -191,6 +191,8 @@ alias ga='git add'
 alias gb='git blame'
 alias gc='git checkout'
 alias gcb='git checkout -b'
+alias gw='git switch'
+alias gwc='git switch -c'
 alias gl='git log'
 alias gf='git fetch'
 alias glg='git log --oneline --decorate=full --graph'
@@ -806,3 +808,6 @@ complete -o default -F __start_kubectl k
 
 # yarn
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+
+# rust
+export PATH="$HOME/.cargo/bin:$PATH"
